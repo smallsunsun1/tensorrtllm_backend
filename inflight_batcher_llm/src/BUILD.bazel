@@ -1,0 +1,54 @@
+package(default_visibility=["//visibility:public"])
+
+cc_library(
+    name = "inflight_batcher_llm_lib",
+    srcs = [
+        "model_instance_state.cc",
+        "model_state.cc",
+        "utils.cc",
+        "work_item.cc",
+        "work_items_queue.cc",
+        "custom_metrics_reporter/custom_metrics_reporter.cc",
+    ],
+    hdrs = [
+        "model_instance_state.h",
+        "model_state.h",
+        "utils.h",
+        "work_item.h",
+        "work_items_queue.h",
+        "custom_metrics_reporter/custom_metrics_reporter.h",
+    ],
+    deps = [
+        "@triton-backend",
+    ],
+    alwayslink = True,
+)
+
+tensorrtllm_ldscript_file = "copyed_libtriton_tensorrtllm.ldscript"
+
+genrule(
+    name = "copy_minimal_ldscript",
+    srcs = [
+        "libtriton_tensorrtllm.ldscript",
+    ],
+    outs = [
+        tensorrtllm_ldscript_file,
+    ],
+    cmd = "cp $(SRCS) $(OUTS)",
+    tags = ["local"]
+)
+
+cc_binary(
+    name = "triton_tensorrtllm",
+    srcs = [
+        "libtensorrtllm.cc",
+    ],
+    linkopts = [
+        "-Wl,--version-script,$(location %s)" % tensorrtllm_ldscript_file,
+    ],
+    deps = [
+        ":inflight_batcher_llm_lib",
+        tensorrtllm_ldscript_file,
+    ],
+    linkshared = True,
+)

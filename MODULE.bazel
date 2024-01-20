@@ -1,0 +1,10 @@
+"""tensorrt-llm backend bazel module"""
+module(
+    name = "tensorrt-llm-backend",
+    version = "r23.10",
+    compatibility_level = 1,
+)
+
+bazel_dep(name = "triton-backend", version = "r23.10")
+bazel_dep(name = "tensorrt-llm", version = "1.0.0")
+bazel_dep(name = "platforms", version = "0.0.8")

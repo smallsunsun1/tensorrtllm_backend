@@ -9,3 +9,6 @@ build/
 .coverage
 *.onnx
 tmp/
+
+bazel-*
+MODULE.bazel.lock
